@@ -4,16 +4,7 @@ import { Link, Route } from 'react-router-dom'
 import * as BooksAPI from '../Utils/BooksAPI'
 import Book from './Book'
 import PopMSG from '../Utils/PopMSG'
-
-const shelfs = {
- none: 'none',
- currently_reading: "Currently Reading",
- want_to_read: "Want to Read",
- already_read: "Already Read",
- currentlyReading: "currentlyReading",
- wantToRead: "wantToRead",
- read: "read"
-}
+import shelfs from '../Utils/Shelfs'
 
 class Initial extends Component {
   state = {
@@ -71,7 +62,7 @@ class Initial extends Component {
         <div className="list-books-title">
           <h1>MYREADS</h1>
         </div>
-        <img alt="loading gif" className="middlr bottom-side" style={{width: "175px", display: this.state.showLoading}} src="https://ryanwaite28.github.io/book-search/Loading_icon.gif"/>
+        <img alt="loading gif" className="middlr bottom-side" style={{width: "175px", display: this.state.showLoading}} src="./Loading_icon.gif"/>
 
         <div className="list-books-content">
           <div>

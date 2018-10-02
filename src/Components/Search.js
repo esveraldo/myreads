@@ -2,14 +2,34 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import * as BooksAPI from '../Utils/BooksAPI'
 import Book from './Book'
+import PopMSG from '../Utils/PopMSG'
+import shelfs from '../Utils/Shelfs'
 
 class Search extends Component {
 
   state = {
     query: '',
     results: [],
+    none: [],
     error: false,
     shelf: '',
+    popmsg: '',
+    popmsgdisplay: 'none',
+    showLoading: 'none'
+  }
+
+  showPopMSG(text){
+    this.setState({
+      popmsg: text,
+      popmsgdisplay: 'block'
+    }, () => {
+      setTimeout(() => {
+        this.setState({
+          popmsg: '',
+          popmsgdisplay: 'none'
+        });
+      } , 2000);
+    })
   }
 
   updateQuery = (query) => {
@@ -31,6 +51,8 @@ class Search extends Component {
       return;
     }
 
+    this.setState({showLoading: "block"});
+
     BooksAPI.getAll().then((books) => {
       shelf: books
     });
@@ -42,7 +64,7 @@ class Search extends Component {
         if(this.state.results !== books) {
           this.setState({results: books, shelf: books});
         }
-        this.setState({error: false});
+        this.setState({showLoading: "none", error: false});
       }
     });
   }
@@ -55,9 +77,10 @@ class Search extends Component {
 
     return (
       <div className="search-books">
-        <div className="search-books-bar">
-          <Link className="close-search" to="/">Close</Link>
-          <div className="search-books-input-wrapper">
+        <PopMSG display={this.state.popmsgdisplay} text={this.state.popmsg}/>
+          <div className="search-books-bar">
+            <Link className="close-search" to="/">Close</Link>
+              <div className="search-books-input-wrapper">
             {/*
               NOTES: The search from BooksAPI is limited to a particular set of search terms.
               You can find these search terms here:
@@ -73,10 +96,11 @@ class Search extends Component {
           </div>
         </div>
         <div className="search-books-results">
+        <img alt="loading gif" className="middlr bottom-side" style={{width: "175px", display: this.state.showLoading}} src="./Loading_icon.gif"/>
           <hr/>
           <ol className="books-grid">
             {this.state.query !== "" && this.state.results.length > 0 && this.state.results.map((book, index) => (
-              <Book refresh={this.refresh.bind(this)} book={book} shelf={book.shelf} key={book.id} id={book.id} imgurl={book.imageLinks === undefined ? "" : book.imageLinks.thumbnail} title={book.title} author={book.authors} />
+              <Book refresh={this.refresh.bind(this)} showPopMSG={this.showPopMSG.bind(this)} book={book} shelf={book.shelf} key={book.id} id={book.id} imgurl={book.imageLinks === undefined ? "" : book.imageLinks.thumbnail} title={book.title} author={book.authors} />
             ))}
           </ol>
           {this.state.error && <p>No Results...</p>}
@@ -84,7 +108,6 @@ class Search extends Component {
       </div>
     )
   }
-
 }
 
 export default Search
