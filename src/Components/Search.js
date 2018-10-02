@@ -9,10 +9,12 @@ class Search extends Component {
     query: '',
     results: [],
     error: false,
+    shelf: '',
   }
 
   updateQuery = (query) => {
-    this.setState({query: query.trim()}, this.submit);
+    this.setState(
+      {query: query}, this.submit);
   }
 
   clearQuery = (query) => {
@@ -29,23 +31,24 @@ class Search extends Component {
       return;
     }
 
+    BooksAPI.getAll().then((books) => {
+      shelf: books
+    });
+
     BooksAPI.search(this.state.query).then((books) => {
       if(books.error && books.error === "empty query") {
         this.setState({error: true, results: []});
       }else {
         if(this.state.results !== books) {
-          this.setState({results: books});
+          this.setState({results: books, shelf: books});
         }
         this.setState({error: false});
       }
     });
   }
 
-  refresh(book, shelf){
-    this.setState(() => {
-      var index = this.state.results.indexOf(book, 0);
-      this.state.results[index].shelf = shelf;
-    });
+  refresh(book, index){
+    this.setState({index: this.state.results.indexOf(book, 0)});
   }
 
   render () {
