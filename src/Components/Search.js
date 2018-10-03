@@ -45,6 +45,12 @@ class Search extends Component {
     this.setState({results: []});
   }
 
+  componentDidMount() {
+    BooksAPI.getAll().then((books) => {
+      this.setState({myBooks: books});
+    });
+  }
+
   submit() {
     if(this.state.query === '' || this.state.query === undefined || this.state.query === null) {
       this.setState({results : [], query : '', error : false});
@@ -53,16 +59,16 @@ class Search extends Component {
 
     this.setState({showLoading: "block"});
 
-    BooksAPI.getAll().then((books) => {
-      shelf: books
-    });
-
     BooksAPI.search(this.state.query).then((books) => {
       if(books.error && books.error === "empty query") {
         this.setState({error: true, results: []});
       }else {
         if(this.state.results !== books) {
-          this.setState({results: books, shelf: books});
+          books.forEach(item => {
+              const myBook = this.state.myBooks.find(elem => elem.id === item.id)
+              if(myBook) item.shelf = myBook.shelf
+          })
+          this.setState({results: books});
         }
         this.setState({showLoading: "none", error: false});
       }
